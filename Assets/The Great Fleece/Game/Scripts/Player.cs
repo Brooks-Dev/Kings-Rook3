@@ -28,9 +28,6 @@ public class Player : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 Debug.Log("Mouse position at " + hit.point);
-                //create object at floor position
-                GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                sphere.transform.position = hit.point;
                 _agent.destination = hit.point;
             }
         }

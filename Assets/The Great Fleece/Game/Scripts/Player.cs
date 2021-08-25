@@ -7,6 +7,11 @@ public class Player : MonoBehaviour
 {
     private NavMeshAgent _agent;
     private Animator _animator;
+    [SerializeField]
+    private Transform _coinPrefab;
+    [SerializeField]
+    private AudioClip _coinClip;
+    private bool _coinThrown;
 
     // Start is called before the first frame update
     void Start()
@@ -36,8 +41,21 @@ public class Player : MonoBehaviour
                 _agent.destination = hit.point;
             }
         }
-        //animate walking if moving to destination
-        if (_agent.hasPath == true)
+        //if right click toss coin
+        if (Input.GetMouseButtonDown(1) && _coinThrown == false)
+        {
+            //instatiate coin
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                Instantiate(_coinPrefab, hit.point, Quaternion.identity);
+                //play sound effect
+                AudioSource.PlayClipAtPoint(_coinClip, hit.point);
+                _coinThrown = true;
+            }
+        }
+            //animate walking if moving to destination
+            if (_agent.hasPath == true)
         {
             _animator.SetBool("Walk", true);
         }

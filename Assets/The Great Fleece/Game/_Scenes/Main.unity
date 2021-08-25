@@ -20742,6 +20742,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b9cae7769de85946bbc1242ece0501c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _coinPrefab: {fileID: 4340418032914618, guid: 4aee20544b12e47219af132208bc5ccb,
+    type: 3}
+  _coinClip: {fileID: 8300000, guid: 7a03079805ab64c8ea844d80fdc43366, type: 3}
 --- !u!195 &794010862
 NavMeshAgent:
   m_ObjectHideFlags: 0

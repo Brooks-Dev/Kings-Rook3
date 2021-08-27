@@ -13,6 +13,8 @@ public class GuardAI : MonoBehaviour
     private bool _reverse;
     private bool _targetReached;
     private Animator _animator;
+    private bool _coinTossed;
+    private Transform _target;
 
     // Start is called before the first frame update
     void Start()
@@ -27,15 +29,18 @@ public class GuardAI : MonoBehaviour
         {
             Debug.LogError("Animator on guard AI is null.");
         }
+        _target = _wayPoints[_currentWayPoint];
+        _agent.destination = _target.position;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (_agent.hasPath == false && _agent.pathPending == false && _targetReached == false)
+        float distance = Vector3.Distance(transform.position, _target.position);
+        if (distance < 1.0f && _targetReached == false && _coinTossed == false)
         {
             //if begining (0) or end (n > 1) of path
-            //reverse direction of movement and pause
+            //reverse direction and pause
             if (_currentWayPoint == 0)
             {
                 _reverse = false;
@@ -46,10 +51,10 @@ public class GuardAI : MonoBehaviour
                 _reverse = true; 
                 _targetReached = true;
             }
-            //select next way point if at beginning (0)
+            //select next way point
             if (_currentWayPoint >= _wayPoints.Count - 1)
             {
-                //do nothing if ony one waypoint
+                //do nothing if only one waypoint
                 if (_wayPoints.Count == 1)
                 {
                     _currentWayPoint = 0;
@@ -61,9 +66,9 @@ public class GuardAI : MonoBehaviour
                     _reverse = true;
                 }
             }
-            //for branched path randomly choose either left (2) or right (3) path
             else if (_currentWayPoint == 1 && _reverse == false)
             {
+                //for branched path randomly choose either left (2) or right (3) path
                 _currentWayPoint = Random.Range(2, _wayPoints.Count);
             }
             else
@@ -79,22 +84,26 @@ public class GuardAI : MonoBehaviour
                 }
             }
             if (_targetReached == true)
-            { 
-                StartCoroutine(WaitBeforeMoving()); 
+            {
+                StartCoroutine(WaitBeforeMoving());
             }
             else
             {
-                _agent.destination = _wayPoints[_currentWayPoint].position;
+                if (_wayPoints[_currentWayPoint] != null)
+                {
+                    _target = _wayPoints[_currentWayPoint].transform;
+                    _agent.destination = _target.position;
+                } 
             }
         }
         //animate walking if moving to destination
-        if (_agent.hasPath == true)
+        if (distance < 2.5f)
         {
-            _animator.SetBool("Walk", true);
+            _animator.SetBool("Walk", false);
         }
         else
         {
-            _animator.SetBool("Walk", false);
+            _animator.SetBool("Walk", true);
         }
     }
 
@@ -102,9 +111,17 @@ public class GuardAI : MonoBehaviour
     {
         yield return new WaitForSeconds(Random.Range(2f,5f));
         _targetReached = false;
-        if (_wayPoints[_currentWayPoint] != null)
+        if (_wayPoints[_currentWayPoint] != null && _coinTossed == false)
         {
-            _agent.destination = _wayPoints[_currentWayPoint].position;
+            _target = _wayPoints[_currentWayPoint].transform;
+            _agent.destination = _target.position;
         }
+    }
+
+    public void MoveToCoin(Vector3 coinPos)
+    {
+        _target.position = coinPos;
+        _agent.destination = coinPos;
+        _coinTossed = true;
     }
 }

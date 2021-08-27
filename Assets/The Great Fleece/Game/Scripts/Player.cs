@@ -50,8 +50,13 @@ public class Player : MonoBehaviour
             {
                 Instantiate(_coinPrefab, hit.point, Quaternion.identity);
                 //play sound effect
-                AudioSource.PlayClipAtPoint(_coinClip, hit.point);
+                AudioSource audio = Camera.main.GetComponent<AudioSource>();
+                audio.clip = _coinClip;
+                audio.Play();
                 _coinThrown = true;
+                SendGuardsToCoin(hit.point);
+                transform.LookAt(hit.point);
+                _animator.SetTrigger("Throw");
             }
         }
             //animate walking if moving to destination
@@ -62,6 +67,16 @@ public class Player : MonoBehaviour
         else
         {
             _animator.SetBool("Walk", false);
+        }
+    }
+
+    void SendGuardsToCoin(Vector3 coinPos)
+    {
+        GameObject[] allGuards;
+        allGuards = GameObject.FindGameObjectsWithTag("Guard1");
+        foreach (GameObject guard in allGuards)
+        {
+            guard.GetComponent<GuardAI>().MoveToCoin(coinPos);
         }
     }
 }

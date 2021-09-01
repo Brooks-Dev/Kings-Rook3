@@ -50,9 +50,7 @@ public class Player : MonoBehaviour
             {
                 Instantiate(_coinPrefab, hit.point, Quaternion.identity);
                 //play sound effect
-                AudioSource audio = Camera.main.GetComponent<AudioSource>();
-                audio.clip = _coinClip;
-                audio.Play();
+                AudioManager.Instance.PlayVoiceOver(_coinClip);
                 _coinThrown = true;
                 SendGuardsToCoin(hit.point);
                 transform.LookAt(hit.point);
